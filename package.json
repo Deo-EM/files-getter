@@ -28,6 +28,7 @@
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
     "changeset": "changeset",
+    "upload": "node scripts/release.mjs",
     "release": "node scripts/release.mjs",
     "release:patch": "node scripts/release.mjs patch",
     "release:minor": "node scripts/release.mjs minor",
@@ -51,13 +52,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/Deo-EM/files-getter.git"
   },
-  "homepage": "",
+  "homepage": "https://github.com/Deo-EM/files-getter#readme",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/Deo-EM/files-getter/issues"
   },
-  "author": "",
+  "author": "Deo-EM",
   "devDependencies": {
     "@babel/core": "^7.29.7",
     "@babel/preset-env": "^7.29.7",
