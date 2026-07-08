@@ -1,5 +1,11 @@
 # files-getter
 
+## 1.0.13
+
+### Patch Changes
+
+- Release v1.0.13
+
 ## 1.0.12
 
 ### Patch Changes
