@@ -20,7 +20,7 @@ function show(files: File[]) {
 }
 
 document.getElementById("btn-single")!.addEventListener("click", async () => {
-  const files = await filesGetter({ mode: "single", accept: "image/*" });
+  const files = await filesGetter();
   show(files);
 });
 

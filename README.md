@@ -84,15 +84,33 @@ const [selfie] = await filesGetter({
 
 ## 用户取消处理
 
-当用户关闭文件选择对话框而未选择任何文件时，Promise 会 **resolve 空数组 `[]`**，不会抛出错误。
+当用户关闭文件选择对话框而未选择任何文件时，Promise 会 **reject 一个 `AbortError`**。
 
 ```ts
-const files = await filesGetter();
-if (files.length === 0) {
-  console.log("用户取消了选择");
-  return;
+try {
+  const files = await filesGetter();
+  // 正常处理文件...
+} catch (err) {
+  if (err instanceof DOMException && err.name === "AbortError") {
+    console.log("用户取消了选择");
+    return;
+  }
+  throw err; // 其他异常继续向上抛
 }
-// 正常处理文件...
+```
+
+也可以通过导出的 `ABORT_ERROR_NAME` 常量来判断：
+
+```ts
+import { filesGetter, ABORT_ERROR_NAME } from "files-getter";
+
+try {
+  const files = await filesGetter();
+} catch (err) {
+  if (err instanceof Error && err.name === ABORT_ERROR_NAME) {
+    // 用户取消
+  }
+}
 ```
 
 ## API 文档
@@ -103,8 +121,8 @@ if (files.length === 0) {
 
 **返回值：** `Promise<File[]>`
 
-- 用户选择了文件 → 返回包含所选文件的数组
-- 用户取消了选择 → 返回空数组 `[]`
+- 用户选择了文件 → resolve 包含所选文件的 `File[]` 数组
+- 用户取消了选择 → reject 一个 `DOMException`（`name` 为 `"AbortError"`）
 
 ### 参数类型：`FilesGetterOptions`
 
