@@ -1,6 +1,6 @@
 {
   "name": "files-getter",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Imperative file picker for browser — await filesGetter(options) to get File objects for single, multiple, or directory selection",
   "type": "module",
   "main": "./dist/index.cjs",
