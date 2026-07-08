@@ -5,17 +5,20 @@ import { minify } from "terser";
 /**
  * 自定义 Terser 压缩插件。
  *
- * 在 generateBundle 阶段直接替换 chunk 的 code，确保最终写入磁盘的是
- * 真正压缩后的 ES5 代码（Rolldown 内置 minify 会把字符串转成模板字面量，破坏 ES5 兼容性）。
+ * 在 generateBundle 阶段直接替换 chunk 的 code，实现更激进的压缩。
  */
 function terserPlugin() {
   return {
     name: "terser-es5",
-    async generateBundle(_options: unknown, bundle: Record<string, { code?: string }>) {
+    async generateBundle(
+      _options: unknown,
+      bundle: Record<string, { type: string; code?: string }>,
+    ) {
       for (const chunk of Object.values(bundle)) {
-        if (!chunk.code) continue;
+        if (chunk.type !== "chunk" || !chunk.code) continue;
         const result = await minify(chunk.code, {
           ecma: 5,
+          module: true,
           compress: {
             drop_console: true,
             drop_debugger: true,
@@ -24,8 +27,6 @@ function terserPlugin() {
           mangle: true,
           format: {
             comments: false,
-            beautify: false,
-            indent_level: 0,
           },
         });
         if (result.code) {
@@ -55,7 +56,7 @@ export default defineConfig({
         [
           "@babel/preset-env",
           {
-            targets: { ie: "11" },
+            targets: "> 0.1%, last 10 versions, not dead, Android >= 4.4, iOS >= 9",
             modules: false,
           },
         ],

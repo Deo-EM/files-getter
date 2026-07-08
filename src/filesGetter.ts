@@ -53,7 +53,6 @@ export function filesGetter(options: FilesGetterOptions = {}): Promise<File[]> {
       input.multiple = true;
     } else if (mode === "directory") {
       input.setAttribute("webkitdirectory", "");
-      input.setAttribute("mozdirectory", "");
       input.multiple = true;
     }
 
@@ -93,9 +92,14 @@ export function filesGetter(options: FilesGetterOptions = {}): Promise<File[]> {
       finalize(files);
     });
 
-    // 用户取消选择 → reject AbortError，上层用 try/catch，不用判空数组
+    // 用户取消选择
     input.addEventListener("cancel", abort);
 
-    input.click();
+    try {
+      input.click();
+    } catch {
+      // click() 被浏览器安全策略阻止（非用户手势调用时可能发生）
+      abort();
+    }
   });
 }

@@ -44,6 +44,14 @@
     "file-selector"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
   "author": "",
   "devDependencies": {
     "@babel/core": "^7.29.7",

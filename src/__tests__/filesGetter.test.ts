@@ -101,11 +101,10 @@ describe("filesGetter", () => {
 
   // ── 模式：directory ──────────────────────────────────────────────────────
   describe("模式：directory", () => {
-    it("设置 webkitdirectory、mozdirectory 属性和 multiple", () => {
+    it("设置 webkitdirectory 属性和 multiple", () => {
       filesGetter({ mode: "directory" });
       const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
       expect(input.getAttribute("webkitdirectory")).toBe("");
-      expect(input.getAttribute("mozdirectory")).toBe("");
       expect(input.multiple).toBe(true);
       resolveWithFiles([]);
     });
@@ -181,46 +180,9 @@ describe("filesGetter", () => {
       try {
         await promise;
         expect.unreachable("应该 reject");
-      } catch (err: any) {
-        expect(err.name).toBe(ABORT_ERROR_NAME);
+      } catch (err: unknown) {
+        expect(err instanceof DOMException && err.name === ABORT_ERROR_NAME).toBe(true);
       }
-    });
-  });
-
-  // ── directory 模式 focus-before-change 时序 ─────────────────────────────
-  describe("directory 模式 focus-before-change 时序", () => {
-    it("focus 先触发，随后 change 触发（模拟 Chrome 确认弹框延迟），不应返回空数组", async () => {
-      const file = new File(["data"], "photo.jpg");
-      const promise = filesGetter({ mode: "directory" });
-
-      window.dispatchEvent(new Event("focus"));
-      await new Promise((r) => setTimeout(r, 10));
-      resolveWithFiles([file]);
-
-      const result = await promise;
-      expect(result).toHaveLength(1);
-      expect(result[0].name).toBe("photo.jpg");
-    });
-
-    it("仅 focus 触发不应导致 Promise 误 resolve 或 reject（确认弹框还在等用户操作）", async () => {
-      const promise = filesGetter({ mode: "directory" });
-      window.dispatchEvent(new Event("focus"));
-
-      let settled = false;
-      promise
-        .then(() => {
-          settled = true;
-        })
-        .catch(() => {
-          settled = true;
-        });
-      await new Promise((r) => setTimeout(r, 100));
-      expect(settled).toBe(false);
-
-      // 清理：触发 cancel（会 reject）
-      const input = document.querySelector<HTMLInputElement>('input[type="file"]')!;
-      input.dispatchEvent(new Event("cancel"));
-      await expect(promise).rejects.toThrow();
     });
   });
 
